@@ -1,0 +1,27 @@
+server:
+  port: 5001
+  forward-headers-strategy: framework
+  servlet:
+    contextPath: /
+
+spring:
+  data:
+    mongodb:
+      uri: mongodb://root:root@localhost:27017/${spring.data.mongodb.database}?authSource=${spring.data.mongodb.authentication-database}&readPreference=primaryPreferred&directConnection=true
+      host: localhost
+      port: 27017
+      database: i-appointment
+      username: root
+      password: root
+      auto-index-creation: true
+      authentication-database: admin
+
+openapi:
+  service:
+    title: i-appointment system
+    version: 1.0
+    description: Booking and reservation system
+    url: http://127.0.0.1:5001
+    contact:
+      name: Purple Mango
+      url: https://github.com/jesseballera/i-appointment.git
