@@ -5,6 +5,7 @@ import com.purplemango.app.config.MultiTenantMongoDBFactory;
 import com.purplemango.app.model.tenant.Tenant;
 import com.purplemango.app.model.tenant.TenantUser;
 import com.purplemango.app.repository.MongoBaseRepository;
+import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -30,10 +31,10 @@ public class TenantUserRepositoryImpl extends MongoBaseRepository<TenantUser> im
     }
 
     @Override
-    public Collection<TenantUser> findAllUserByTenant(String tenantId) {
-        String databaseName = String.format("%s-%s", this.getTargetName(), tenantId);
+    public Collection<TenantUser> findAllUserByTenant(String tenant) {
+        String databaseName = String.format("%s-%s", this.getTargetName(), tenant);
         MultiTenantMongoDBFactory.setDatabaseNameForCurrentThread(databaseName);
-        Query query = new Query(Criteria.where("tenant").is(tenantId));
+        Query query = new Query(Criteria.where("tenant").is(tenant));
         return mongoTemplate.find(query, TenantUser.class, COLLECTION_NAME);
     }
 
@@ -47,17 +48,22 @@ public class TenantUserRepositoryImpl extends MongoBaseRepository<TenantUser> im
     }
 
     @Override
-    public Tenant findByTenantId(String tenantId) {
-        return null;
+    public TenantUser findByTenantUserById(String tenant, ObjectId id)    {
+        String databaseName = String.format("%s-%s", this.getTargetName(), tenant);
+        MultiTenantMongoDBFactory.setDatabaseNameForCurrentThread(databaseName);
+        Query query = new Query().addCriteria(Criteria.where("id").is(id));
+        return mongoTemplate.findOne(query, TenantUser.class, COLLECTION_NAME);
     }
 
     @Override
-    public TenantUser findByTenantIdAndUserId(String tenantId, String userId) {
+    public TenantUser findByTenantIdAndUserId(String tenant, ObjectId userId) {
         return null;
     }
 
     @Override
     public TenantUser save(TenantUser entity) {
+        String databaseName = String.format("%s-%s", this.getTargetName(), entity.tenant().companyName());
+        MultiTenantMongoDBFactory.setDatabaseNameForCurrentThread(databaseName);
         return save(entity, COLLECTION_NAME);
     }
 }

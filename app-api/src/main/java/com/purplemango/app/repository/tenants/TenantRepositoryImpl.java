@@ -4,6 +4,7 @@ import com.mongodb.client.result.UpdateResult;
 import com.purplemango.app.aop.operations.BeforeGlobalMongoOperation;
 import com.purplemango.app.model.tenant.Tenant;
 import com.purplemango.app.repository.MongoBaseRepository;
+import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @BeforeGlobalMongoOperation
@@ -29,8 +31,9 @@ public class TenantRepositoryImpl extends MongoBaseRepository<Tenant> implements
         this.mongoTemplate = mongoTemplate;
     }
     @Override
-    public Tenant findByCompanyNameAndCompanyCode(String companyName, String companyCode) {
-        return null;
+    public Optional<Tenant> findByCompanyNameAndCompanyCode(String companyName, String companyCode) {
+        Query query = new Query(Criteria.where("companyName").is(companyName).and("companyCode").is(companyCode));
+        return Optional.ofNullable(findOneByQuery(query, Tenant.class, COLLECTION_NAME));
     }
 
     @Override
@@ -46,9 +49,15 @@ public class TenantRepositoryImpl extends MongoBaseRepository<Tenant> implements
     }
 
     @Override
-    public Tenant findById(String tenantId) {
+    public Optional<Tenant> findById(ObjectId tenantId) {
         Query query = new Query(Criteria.where("id").is(tenantId));
-        return findOneByQuery(query, Tenant.class, COLLECTION_NAME);
+        return Optional.ofNullable(findOneByQuery(query, Tenant.class, COLLECTION_NAME));
+    }
+
+    @Override
+    public Optional<Tenant> findByName(String tenantName) {
+        Query query = new Query(Criteria.where("companyName").is(tenantName));
+        return Optional.ofNullable(findOneByQuery(query, Tenant.class, COLLECTION_NAME));
     }
 
     @Override
@@ -75,6 +84,6 @@ public class TenantRepositoryImpl extends MongoBaseRepository<Tenant> implements
             UpdateResult updateResult = mongoTemplate.upsert(query, updateDefinition, Tenant.class);
 //            id = updateResult.getUpsertedId().toString();
 //        }
-        return findById(tenant.id());
+        return findById(tenant.id()).get();
     }
 }

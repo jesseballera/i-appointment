@@ -3,7 +3,9 @@ package com.purplemango.app.controller;
 import com.purplemango.app.model.tenant.AddTenant;
 import com.purplemango.app.model.tenant.Tenant;
 import com.purplemango.app.model.tenant.UpdateTenant;
+import com.purplemango.app.model.tenant.ViewTenant;
 import com.purplemango.app.service.tenants.TenantService;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -37,22 +39,22 @@ public class TenantController {
     }
 
     @GetMapping("/find-by-id")
-    public ResponseEntity<?> getTenantById(@RequestParam("tenant-id") String tenantId) {
+    public ResponseEntity<?> getTenantById(@RequestParam("tenant-id") ObjectId tenantId) {
         return ResponseEntity.ok(tenantService.getTenantById(tenantId));
     }
 
     @PostMapping
-    public ResponseEntity<?> createTenant(@RequestBody @Validated AddTenant entity) {
-        Tenant tenant = tenantService.createTenant(entity);
+    public ResponseEntity<ViewTenant> createTenant(@RequestBody @Validated AddTenant entity) {
+        ViewTenant tenant = tenantService.createTenant(entity);
         return ResponseEntity.ok(tenant);
     }
 
     @PutMapping("/{tenant-id}")
-    public ResponseEntity<?> createOrUpdateTenant(@PathVariable("tenant-id") String tenantId, @RequestBody @Validated UpdateTenant entity) {
-        if (tenantId == null || tenantId.isEmpty() || !tenantId.equals(entity.id())) {
+    public ResponseEntity<ViewTenant> createOrUpdateTenant(@PathVariable("tenant-id") ObjectId tenantId, @RequestBody @Validated UpdateTenant entity) {
+        if (tenantId == null) {
             return ResponseEntity.badRequest().build();
         }
-        Tenant tenant = tenantService.createOrUpdateTenant(entity);
+        ViewTenant tenant = tenantService.createOrUpdateTenant(entity, tenantId);
         return ResponseEntity.ok(tenant);
     }
 }

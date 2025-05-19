@@ -1,18 +1,23 @@
 package com.purplemango.app.service.tenants;
 
 import com.purplemango.app.exceptions.TenantDuplicateException;
+import com.purplemango.app.exceptions.TenantNotFoundException;
 import com.purplemango.app.model.tenant.AddTenant;
 import com.purplemango.app.model.tenant.Tenant;
 import com.purplemango.app.model.tenant.UpdateTenant;
+import com.purplemango.app.model.tenant.ViewTenant;
 import com.purplemango.app.repository.tenants.TenantRepository;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -25,32 +30,41 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
-    public Collection<Tenant> getAllTenants() {
-        return tenantRepository.findAll();
+    public Collection<ViewTenant> getAllTenants() {
+        Collection<Tenant> tenants = tenantRepository.findAll();
+        return tenants.stream().map(ViewTenant::of).collect(Collectors.toList());
     }
 
     @Override
-    public Page<Tenant> getAllTenants(Pageable pageable) {
-        return tenantRepository.findAll(pageable);
+    public Page<ViewTenant> getAllTenants(Pageable pageable) {
+        Page<Tenant> page = tenantRepository.findAll(pageable);
+        return page.map(ViewTenant::of);
     }
 
     @Override
-    public Tenant getTenantById(final String tenantId) {
-        return tenantRepository.findById(tenantId);
+    public ViewTenant getTenantById(final ObjectId tenantId) {
+        return ViewTenant
+                .of(tenantRepository.findById(tenantId).orElseThrow(() -> new TenantNotFoundException("Tenant not found")));
     }
 
     @Override
-    public Tenant createTenant(final AddTenant entity) {
-        Tenant tenant = tenantRepository.findByCompanyNameAndCompanyCode(entity.companyName(), entity.companyCode());
-        if (tenant != null) {
+    public ViewTenant getTenantByName(String tenantName) {
+        return ViewTenant
+                .of(tenantRepository.findByName(tenantName).orElseThrow(() -> new TenantNotFoundException("Tenant not found")));
+    }
+
+    @Override
+    public ViewTenant createTenant(final AddTenant entity) {
+        Optional<Tenant> tenant = tenantRepository.findByCompanyNameAndCompanyCode(entity.companyName(), entity.companyCode());
+        if (tenant.isPresent()) {
             throw new TenantDuplicateException("Tenant already exists");
         }
-
-        return tenantRepository.save(Tenant.build(entity));
+        return ViewTenant.of(tenantRepository.save(Tenant.build(entity)));
     }
 
     @Override
-    public Tenant createOrUpdateTenant(UpdateTenant tenant) {
-        return tenantRepository.createOrUpdateTenant(Tenant.upsert(tenant));
+    public ViewTenant createOrUpdateTenant(UpdateTenant tenant, ObjectId entityId) {
+        return ViewTenant
+                .of(tenantRepository.createOrUpdateTenant(Tenant.upsert(tenant, entityId)));
     }
 }

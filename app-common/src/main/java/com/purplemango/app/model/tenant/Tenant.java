@@ -1,43 +1,32 @@
 package com.purplemango.app.model.tenant;
 
-import lombok.AccessLevel;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Builder;
-import lombok.experimental.FieldDefaults;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
-import java.util.UUID;
-
 @Builder
 @Document(collection = "tenants")
-public record Tenant(@MongoId String id,
-                     @Indexed(unique = true) String companyName,
-                     @Indexed(unique = true) String companyCode) {
+public record Tenant(
+        @MongoId ObjectId id,
+        @Indexed(unique = true) String companyName,
+        @Indexed(unique = true) String companyCode) {
 
     public static Tenant build(AddTenant addTenant) {
         return Tenant.builder()
-                .id(UUID.randomUUID().toString())
+                .id(ObjectId.get())
                 .companyName(addTenant.companyName())
                 .companyCode(addTenant.companyCode())
                 .build();
     }
 
-    public static Tenant upsert(UpdateTenant entity) {
+    public static Tenant upsert(UpdateTenant entity, ObjectId id) {
         return Tenant.builder()
-                .id(entity.id())
+                .id(id)
                 .companyName(entity.companyName())
                 .build();
     }
-
-//    public static class Builder {
-//        public Tenant build(AddTenant addTenant) {
-//            return Tenant.builder()
-//                    .id(ObjectId.get())
-//                    .companyName(addTenant.companyName())
-//                    .companyCode(addTenant.companyCode())
-//                    .build();
-//        }
-//    }
 }
