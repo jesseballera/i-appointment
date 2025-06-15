@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  iam-app:
+    build:
+      context: ./app-api
+      dockerfile: Dockerfile
+    image: app-local:latest
+    ports:
+      - "5001:5001"
+    environment:
+      - SPRING_PROFILES_ACTIVE=local
+      - MONGODB_HOST=mongodb
+      - MONGODB_PORT=27017
+      - MONGODB_USERNAME=root
+      - MONGODB_PASSWORD=root
+      - MONGODB_DATABASE=i-appointment
+      - MONGODB_AUTHENTICATION_DATABASE=admin
+      - MONGODB_URI=mongodb://root:root@mongodb:27017/i-appointment?authSource=admin
+      - REDIS_HOST=redis
+      - REDIS_PORT=63791
+      - SPRING_APPLICATION_NAME=app-api
+    depends_on:
+    - mongodb
+    networks:
+      - my_network
+    links:
+      - "redis"
+  mongodb:
+    image: mongo:latest
+    ports:
+        - "27017:27017"
+    volumes:
+        - mongo-data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    networks:
+      - my_network
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "63791:63791"
+    networks:
+      - my_network
+volumes:
+  mongo-data:
+networks:
+  my_network:
+    driver: bridge
