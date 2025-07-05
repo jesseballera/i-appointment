@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.purplemango.app.proto.tenant";
+import  "core.proto";
+
+service TenantService {
+  rpc GetTenantById(TenantId) returns (TenantResponse){}
+  rpc CreateTenant(CreateTenantRequest) returns (TenantResponse){}
+  rpc UpdateTenant(UpdateTenantRequest) returns (TenantResponse){}
+  rpc GetAllTenants(PageInfo) returns (stream PaginatedTenantResponse){}
+  rpc GetTenantList(Empty) returns (TenantResponse){}
+  rpc DeleteTenant(TenantId) returns (Empty){}
+}
+
+message TenantId {
+  string id = 1;
+}
+
+message CreateTenantRequest {
+  string companyName = 1;
+  string companyCode = 2;
+}
+
+message UpdateTenantRequest {
+  string id = 1;
+  string companyName = 2;
+  string companyCode = 3;
+}
+
+message TenantGrpc {
+  string id = 1;
+  string companyName = 2;
+  string companyCode = 3;
+}
+
+message TenantResponse {
+  TenantGrpc tenant = 1;
+}
+
+message PaginatedTenantResponse {
+  repeated TenantResponse items = 1;
+  PageInfo pageInfo = 2;
+}

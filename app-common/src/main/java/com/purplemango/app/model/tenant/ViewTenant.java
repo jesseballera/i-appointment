@@ -18,4 +18,11 @@ public record ViewTenant(
                     .companyCode(tenant.companyCode())
                     .build();
         }
+        public static Tenant toTenant(ViewTenant entity) {
+            return Tenant.builder()
+                    .id(entity.id())
+                    .companyName(entity.companyName())
+                    .companyCode(entity.companyCode())
+                    .build();
+        }
 }

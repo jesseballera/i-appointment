@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.purplemango.app.proto.core";
+
+message Empty {
+}
+
+enum Direction {
+  ASC = 0;
+  DESC = 1;
+}
+
+message PageInfo {
+  int32 pageNumber = 1;
+  int32 pageSize = 2;
+  string sort = 3;
+  Direction direction = 4;
+}

@@ -1,9 +1,12 @@
 package com.purplemango.app.controller;
 
+import com.google.protobuf.DescriptorProtos;
+import com.purplemango.app.grpc.client.TenantGrpcClient;
 import com.purplemango.app.model.tenant.AddTenant;
 import com.purplemango.app.model.tenant.Tenant;
 import com.purplemango.app.model.tenant.UpdateTenant;
 import com.purplemango.app.model.tenant.ViewTenant;
+import com.purplemango.app.proto.tenant.TenantGrpc;
 import com.purplemango.app.service.tenants.TenantService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +21,12 @@ import org.springframework.web.bind.annotation.*;
 public class TenantController {
 
     TenantService tenantService;
+    TenantGrpcClient tenantGrpcClient;
 
     @Autowired
-    public TenantController(TenantService tenantService) {
+    public TenantController(TenantService tenantService, TenantGrpcClient tenantGrpcClient) {
         this.tenantService = tenantService;
+        this.tenantGrpcClient = tenantGrpcClient;
     }
 
     @GetMapping("/all")
@@ -38,9 +43,10 @@ public class TenantController {
         return ResponseEntity.ok(tenantService.getAllTenants(PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, sort))));
     }
 
-    @GetMapping("/find-by-id")
-    public ResponseEntity<?> getTenantById(@RequestParam("tenant-id") ObjectId tenantId) {
-        return ResponseEntity.ok(tenantService.getTenantById(tenantId));
+    @GetMapping(value = "/find-by-id", produces = "application/x-protobuf")
+    public ResponseEntity<TenantGrpc> getTenantById(@RequestParam("tenant-id") String tenantId) {
+//        return tenantGrpcClient.readTenantById(tenantId);
+        return ResponseEntity.ok(tenantGrpcClient.readTenantById(tenantId));
     }
 
     @PostMapping
