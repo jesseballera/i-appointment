@@ -38,7 +38,7 @@ public class DataOperationAspect {
             ((MongoBaseRepository) joinPoint.getTarget()).setTargetName(targetName);
         }else{
             try {
-                Method method =  object.getClass().getMethod("tenant", null);
+                Method method =  object.getClass().getMethod("tenantCode", null);
                 String tenantName = (String) method.invoke(object, null);
                 String targetName = String.format("%s-%s", activeProfile, tenantName);
                 ((MongoBaseRepository) joinPoint.getTarget()).setTargetName(targetName);

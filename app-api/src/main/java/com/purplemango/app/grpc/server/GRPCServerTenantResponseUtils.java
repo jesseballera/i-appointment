@@ -4,12 +4,19 @@ import com.purplemango.app.model.tenant.ViewTenant;
 import com.purplemango.app.proto.tenant.TenantGrpc;
 import com.purplemango.app.proto.tenant.TenantResponse;
 import io.grpc.stub.StreamObserver;
+import org.springframework.data.domain.Page;
 
 import java.util.Collections;
 import java.util.List;
 
 public class GRPCServerTenantResponseUtils {
     protected static void sendStreamingResponse(StreamObserver<TenantResponse> responseObserver, List<ViewTenant> tenants) {
+        tenants.iterator()
+                .forEachRemaining(document -> responseObserver.onNext(buildTenantResponse(document)));
+
+    }
+
+    protected static void sendStreamingResponse(StreamObserver<TenantResponse> responseObserver, Page<ViewTenant> tenants) {
         tenants.iterator()
                 .forEachRemaining(document -> responseObserver.onNext(buildTenantResponse(document)));
 

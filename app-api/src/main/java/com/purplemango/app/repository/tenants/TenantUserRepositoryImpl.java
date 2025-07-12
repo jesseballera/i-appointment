@@ -22,7 +22,7 @@ import java.util.List;
 public class TenantUserRepositoryImpl extends MongoBaseRepository<TenantUser> implements TenantUserRepository {
 
     public static final String COLLECTION_NAME = "users";
-    public static final String DATABASE_NAME = "app-tenants";
+    public static final String DATABASE_NAME = "tenants";
     private final MongoTemplate mongoTemplate;
 
     public TenantUserRepositoryImpl(MongoTemplate mongoTemplate) {
@@ -34,7 +34,7 @@ public class TenantUserRepositoryImpl extends MongoBaseRepository<TenantUser> im
     public Collection<TenantUser> findAllUserByTenant(String tenant) {
         String databaseName = String.format("%s-%s", this.getTargetName(), tenant);
         MultiTenantMongoDBFactory.setDatabaseNameForCurrentThread(databaseName);
-        Query query = new Query(Criteria.where("tenant").is(tenant));
+        Query query = new Query(Criteria.where("tenantCode").is(tenant));
         return mongoTemplate.find(query, TenantUser.class, COLLECTION_NAME);
     }
 
@@ -49,8 +49,7 @@ public class TenantUserRepositoryImpl extends MongoBaseRepository<TenantUser> im
 
     @Override
     public TenantUser findByTenantUserById(String tenant, ObjectId id)    {
-        String databaseName = String.format("%s-%s", this.getTargetName(), tenant);
-        MultiTenantMongoDBFactory.setDatabaseNameForCurrentThread(databaseName);
+        MultiTenantMongoDBFactory.setDatabaseNameForCurrentThread(this.getTargetName());
         Query query = new Query().addCriteria(Criteria.where("id").is(id));
         return mongoTemplate.findOne(query, TenantUser.class, COLLECTION_NAME);
     }
@@ -62,8 +61,7 @@ public class TenantUserRepositoryImpl extends MongoBaseRepository<TenantUser> im
 
     @Override
     public TenantUser save(TenantUser entity) {
-        String databaseName = String.format("%s-%s", this.getTargetName(), entity.tenant().companyName());
-        MultiTenantMongoDBFactory.setDatabaseNameForCurrentThread(databaseName);
+        MultiTenantMongoDBFactory.setDatabaseNameForCurrentThread(this.getTargetName());
         return save(entity, COLLECTION_NAME);
     }
 }

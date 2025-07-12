@@ -23,7 +23,7 @@ import java.util.Optional;
 public class TenantRepositoryImpl extends MongoBaseRepository<Tenant> implements TenantRepository {
 
     public static final String COLLECTION_NAME = "tenants";
-    public static final String DATABASE_NAME = "app-tenants";
+    public static final String DATABASE_NAME = "tenants";
     private final MongoTemplate mongoTemplate;
 
     public TenantRepositoryImpl(MongoTemplate mongoTemplate) {
@@ -37,7 +37,7 @@ public class TenantRepositoryImpl extends MongoBaseRepository<Tenant> implements
     }
 
     @Override
-    public Collection<Tenant> findAll() {
+    public List<Tenant> findAll() {
         return mongoTemplate.findAll(Tenant.class, COLLECTION_NAME);
     }
 
@@ -56,7 +56,7 @@ public class TenantRepositoryImpl extends MongoBaseRepository<Tenant> implements
 
     @Override
     public Optional<Tenant> findByName(String tenantName) {
-        Query query = new Query(Criteria.where("companyName").is(tenantName));
+        Query query = new Query(Criteria.where("companyCode").is(tenantName));
         return Optional.ofNullable(findOneByQuery(query, Tenant.class, COLLECTION_NAME));
     }
 
