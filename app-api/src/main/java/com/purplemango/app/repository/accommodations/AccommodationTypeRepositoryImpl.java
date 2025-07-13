@@ -5,7 +5,6 @@ import com.purplemango.app.config.MultiTenantMongoDBFactory;
 import com.purplemango.app.model.accommodation.AccommodationType;
 import com.purplemango.app.repository.MongoBaseRepository;
 import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -21,17 +20,17 @@ import java.util.Optional;
 @BeforeGlobalMongoOperation
 public class AccommodationTypeRepositoryImpl extends MongoBaseRepository<AccommodationType> implements AccommodationTypeRepository {
     public static final String COLLECTION_NAME = "accommodation_types";
+    public static final String DATABASE_NAME = "tenants";
     private final MongoTemplate mongoTemplate;
 
-    public AccommodationTypeRepositoryImpl(MongoTemplate mongoTemplate,
-                                           @Value("${spring.data.mongodb.database}") String databaseName) {
-        super.setDatabaseName(databaseName);
+    public AccommodationTypeRepositoryImpl(MongoTemplate mongoTemplate) {
+        super.setDatabaseName(DATABASE_NAME);
         this.mongoTemplate = mongoTemplate;
     }
 
     @Override
     public AccommodationType save(AccommodationType entity) {
-//        MultiTenantMongoDBFactory.setDatabaseNameForCurrentThread(this.getTargetName());
+        MultiTenantMongoDBFactory.setDatabaseNameForCurrentThread(this.getTargetName());
         return save(entity, COLLECTION_NAME);
     }
 
