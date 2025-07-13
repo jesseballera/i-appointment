@@ -5,6 +5,7 @@ import com.purplemango.app.aop.operations.BeforeGlobalMongoOperation;
 import com.purplemango.app.model.tenant.Tenant;
 import com.purplemango.app.repository.MongoBaseRepository;
 import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -23,11 +24,11 @@ import java.util.Optional;
 public class TenantRepositoryImpl extends MongoBaseRepository<Tenant> implements TenantRepository {
 
     public static final String COLLECTION_NAME = "tenants";
-    public static final String DATABASE_NAME = "tenants";
     private final MongoTemplate mongoTemplate;
 
-    public TenantRepositoryImpl(MongoTemplate mongoTemplate) {
-        super.setDatabaseName(DATABASE_NAME);
+    public TenantRepositoryImpl(MongoTemplate mongoTemplate,
+                                @Value("${spring.data.mongodb.database}") String databaseName) {
+        super.setDatabaseName(databaseName);
         this.mongoTemplate = mongoTemplate;
     }
     @Override

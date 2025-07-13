@@ -4,6 +4,7 @@ import com.purplemango.app.aop.operations.BeforeGlobalMongoOperation;
 import com.purplemango.app.config.MultiTenantMongoDBFactory;
 import com.purplemango.app.model.accommodation.Accommodation;
 import com.purplemango.app.repository.MongoBaseRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -13,11 +14,12 @@ import java.util.List;
 @BeforeGlobalMongoOperation
 public class AccommodationRepositoryImpl extends MongoBaseRepository<Accommodation> implements AccommodationRepository {
     public static final String COLLECTION_NAME = "accommodations";
-    public static final String DATABASE_NAME = "tenants";
+    public static final String DATABASE_NAME = "i-appointment";
     private final MongoTemplate mongoTemplate;
 
-    public AccommodationRepositoryImpl(MongoTemplate mongoTemplate) {
-        super.setDatabaseName(DATABASE_NAME);
+    public AccommodationRepositoryImpl(MongoTemplate mongoTemplate,
+            @Value("${spring.data.mongodb.database}") String databaseName) {
+        super.setDatabaseName(databaseName);
         this.mongoTemplate = mongoTemplate;
     }
 
