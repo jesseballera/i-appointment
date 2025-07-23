@@ -1,6 +1,7 @@
 package com.purplemango.app.repository.accommodations;
 
 import com.purplemango.app.aop.operations.BeforeGlobalMongoOperation;
+import com.purplemango.app.aop.operations.BeforeTenantMongoOperation;
 import com.purplemango.app.config.MultiTenantMongoDBFactory;
 import com.purplemango.app.model.accommodation.Accommodation;
 import com.purplemango.app.repository.MongoBaseRepository;
@@ -11,10 +12,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-@BeforeGlobalMongoOperation
+@BeforeTenantMongoOperation
 public class AccommodationRepositoryImpl extends MongoBaseRepository<Accommodation> implements AccommodationRepository {
     public static final String COLLECTION_NAME = "accommodations";
-    public static final String DATABASE_NAME = "i-appointment";
     private final MongoTemplate mongoTemplate;
 
     public AccommodationRepositoryImpl(MongoTemplate mongoTemplate,

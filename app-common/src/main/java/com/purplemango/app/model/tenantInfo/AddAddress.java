@@ -1,6 +1,4 @@
-package com.purplemango.app.model.tenentInfo;
-
-import org.bson.types.ObjectId;
+package com.purplemango.app.model.tenantInfo;
 
 public record AddAddress(
         String unit,

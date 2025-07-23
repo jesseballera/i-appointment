@@ -1,4 +1,4 @@
-package com.purplemango.app.model.tenentInfo;
+package com.purplemango.app.model.tenantInfo;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.MongoId;

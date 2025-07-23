@@ -1,7 +1,6 @@
-package com.purplemango.app.model.tenentInfo;
+package com.purplemango.app.model.tenantInfo;
 
 import com.purplemango.app.model.accommodation.Accommodation;
-import com.purplemango.app.model.tenant.Tenant;
 import com.purplemango.app.model.tenant.ViewTenant;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.index.Indexed;
